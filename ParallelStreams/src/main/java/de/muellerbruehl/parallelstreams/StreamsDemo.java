@@ -30,24 +30,29 @@ public class StreamsDemo {
 
     for (int i = 0; i < 10; i++) {
       result[0] = 0;
-      LongStream.range(0, 1000).forEach(n -> result[0] = (result[0] + n) * n);
+      LongStream.range(0, 1000).forEach(n -> result[0] = orderDependentFunction(result[0], n));
       System.out.println("serial: " + result[0]);
     }
 
     for (int i = 0; i < 10; i++) {
       result[0] = 0;
-      LongStream.range(0, 1000).parallel().forEach(n -> result[0] = (result[0] + n) * n);
+      LongStream.range(0, 1000).parallel().forEach(n -> result[0] = orderDependentFunction(result[0], n));
       System.out.println("parallel: " + result[0]);
     }
 
     for (int i = 0; i < 10; i++) {
       result[0] = 0;
-      LongStream.range(0, 1000).parallel().forEachOrdered(n -> result[0] = (result[0] + n) * n);
+      LongStream.range(0, 1000).parallel().forEachOrdered(n -> result[0] = orderDependentFunction(result[0], n));
       System.out.println("parallel ordered: " + result[0]);
     }
 
-    long reduce = LongStream.range(0, 1000).reduce(0, (a, c) -> (a + c) * c);
+    long reduce = LongStream.range(0, 1000).reduce(0, StreamsDemo::orderDependentFunction);
     System.out.println("reduce: " + reduce);
+  }
+
+  private static long orderDependentFunction(long a, long c) {
+    // Negative values caused by overflow look like an error
+    return Math.abs((a + c) * c);
   }
 
   private static void countVendors(List<Person> persons) {
