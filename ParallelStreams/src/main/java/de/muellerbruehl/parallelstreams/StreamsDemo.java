@@ -19,9 +19,9 @@ public class StreamsDemo {
   public static void main(String[] args) {
 
     showParallelProblem();
-    System.out.println("started");
+    System.out.println("\nstarted creating persons - takes a while...");
     Persons persons = Persons.getInstance();
-    System.out.println("created " + persons.getPersons().size() + " persons.");
+    System.out.println("created " + persons.getPersons().size() + " persons.\n");
     countVendors(persons.getPersons());
   }
 
@@ -74,6 +74,7 @@ public class StreamsDemo {
     return counter;
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   private static <T> T invokeMethod(String info, Supplier<T> method) {
     long start = System.nanoTime();
     T result = method.get();

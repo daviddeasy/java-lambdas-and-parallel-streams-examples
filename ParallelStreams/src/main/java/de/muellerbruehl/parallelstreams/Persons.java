@@ -13,12 +13,11 @@ public class Persons {
   private final Random _random = new SecureRandom();
   private final static Persons _instance = new Persons();
   private final List<Person> _persons = new ArrayList<>();
+  private final List<Person> _sellers = new ArrayList<>();
 
   public List<Person> getPersons() {
     return _persons;
   }
-
-  private final List<Person> _sellers = new ArrayList<>();
 
   private Persons() {
     for (int i = 0; i < PersonCount; i++) {
