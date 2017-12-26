@@ -10,10 +10,16 @@ import java.util.stream.Collectors;
 public class Persons {
 
   private final static int PersonCount = 50000;
-  private final Random _random = new SecureRandom();
   private final static Persons _instance = new Persons();
+
+  private final Map<String, Gender> givenNameInfos = DataProvider.getInstance().getGivenNames();
+  private final List<String> givenNames = new ArrayList<>(givenNameInfos.keySet());
+  private final List<String> surNames = DataProvider.getInstance().getSurNames();
+
+  private final Random _random = new SecureRandom();
   private final List<Person> _persons = new ArrayList<>();
   private final List<Person> _sellers = new ArrayList<>();
+  private final Map<Integer, Article> articles = DataProvider.getInstance().getArticles();
 
   public List<Person> getPersons() {
     return _persons;
@@ -39,11 +45,7 @@ public class Persons {
 
   private Person createPerson() {
     Person person = new Person();
-    List<String> surNames = DataProvider.getInstance().getSurNames();
     person.setSurname(surNames.get(_random.nextInt(surNames.size())));
-    Map<String, Gender> givenNameInfos = DataProvider.getInstance().getGivenNames();
-    List<String> givenNames = givenNameInfos.keySet()
-            .stream().collect(Collectors.toList());
     person.setGivenName(givenNames.get(_random.nextInt(givenNames.size())));
     person.setGender(givenNameInfos.get(person.getGivenName()));
     person.setAge(15 + _random.nextInt(80));
@@ -54,11 +56,11 @@ public class Persons {
   }
 
   private void makeVendor(Person person) {
-    person.setDiscount(_random.nextInt(5) * 5);
+    person.setDiscountRate(_random.nextInt(5) * 5);
     Map<Integer, ArticleInfo> selling = person.getSelling();
 
     for (int i = 0; i <= _random.nextInt(10); i++) {
-      int articleNo = 1 + _random.nextInt(DataProvider.getInstance().getArticles().size());
+      int articleNo = 1 + _random.nextInt(articles.size());
       if (selling.containsKey(articleNo)) {
         break;
       }
@@ -79,11 +81,11 @@ public class Persons {
     Object[] articleNumbers = selling.keySet().toArray();
     int index = _random.nextInt(articleNumbers.length);
     int articleNo = (int) articleNumbers[index];
-    Article article = DataProvider.getInstance().getArticles().get(articleNo);
+    Article article = articles.get(articleNo);
 
-    if (_random.nextInt(1000) < article.getProbability() + seller.getDiscount() / 5) {
-      int quantity = 1 + _random.nextInt(article.getMaxSells());
-      long price = quantity * article.getPrice().getCents() * (100 - seller.getDiscount()) / 100;
+    if (diceRollsSell(seller, article)) {
+      int quantity = randomQuantityOf(article);
+      long price = applyDiscount(seller.getDiscountRate(), fullPriceFor(quantity, article));
       ArticleInfo infoSelling = selling.get(articleNo);
       infoSelling.setQuantity(infoSelling.getQuantity() + quantity);
       infoSelling.getAmount().add(price);
@@ -92,5 +94,21 @@ public class Persons {
       infoBuying.addPrice(price);
       buying.put(articleNo, infoBuying);
     }
+  }
+
+  private boolean diceRollsSell(Person seller, Article article) {
+    return _random.nextInt(1000) < article.getProbability() + seller.getDiscountRate() / 5;
+  }
+
+  private int randomQuantityOf(Article article) {
+    return 1 + _random.nextInt(article.getMaxSells());
+  }
+
+  private long fullPriceFor(int quantity, Article article) {
+    return quantity * article.getPrice().getCents();
+  }
+
+  private long applyDiscount(int discountRate, long fullPrice) {
+    return fullPrice * (100 - discountRate) / 100;
   }
 }

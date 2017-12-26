@@ -11,7 +11,7 @@ public class Person {
   private int _age;
   private Map<Integer, ArticleInfo> _selling = new ConcurrentHashMap<>();
   private Map<Integer, ArticleInfo> _buying = new ConcurrentHashMap<>();
-  private int _discount;
+  private int _discountRate;
 
   public String getGivenName() {
     return _givenName;
@@ -53,12 +53,12 @@ public class Person {
     return _selling.size() > 0;
   }
 
-  public int getDiscount() {
-    return _discount;
+  public int getDiscountRate() {
+    return _discountRate;
   }
 
-  public void setDiscount(int discount) {
-    _discount = discount;
+  public void setDiscountRate(int discount) {
+    _discountRate = discount;
   }
 
   public Map<Integer, ArticleInfo> getSelling() {
