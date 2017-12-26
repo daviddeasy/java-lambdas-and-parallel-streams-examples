@@ -16,38 +16,81 @@ import java.util.stream.LongStream;
  */
 public class StreamsDemo {
 
+  private static final long[] result = new long[1];
+
   public static void main(String[] args) {
 
     showParallelProblem();
+    /*
     System.out.println("\nstarted creating persons - takes a while...");
-    Persons persons = Persons.getInstance();
+    Persons persons = getPersons();
     System.out.println("created " + persons.getPersons().size() + " persons.\n");
     countVendors(persons.getPersons());
+    */
+  }
+
+  private static Persons getPersons() {
+    return invokeMethod("Creation of persons", Persons::getInstance);
   }
 
   private static void showParallelProblem() {
-    long[] result = new long[1];
 
+    invokeMethod("Serial", StreamsDemo::serial);
+    invokeMethod("Parallel", StreamsDemo::parallel);
+    invokeMethod("ParallelOrdered", StreamsDemo::parallelOrdered);
+
+    // Reduce runs faster alone than it does after "ParallelOrdered"
+    invokeMethod("Reduce", StreamsDemo::reduce);
+
+//    invokeMethod("Parallel Reduce", StreamsDemo::parallelReduce);
+
+  }
+
+  private static Void serial() {
     for (int i = 0; i < 10; i++) {
       result[0] = 0;
-      LongStream.range(0, 1000).forEach(n -> result[0] = orderDependentFunction(result[0], n));
+      getRange().forEach(n -> result[0] = orderDependentFunction(result[0], n));
       System.out.println("serial: " + result[0]);
     }
+    return null;
+  }
 
+  private static Void parallel() {
     for (int i = 0; i < 10; i++) {
       result[0] = 0;
-      LongStream.range(0, 1000).parallel().forEach(n -> result[0] = orderDependentFunction(result[0], n));
+      getRange().parallel().forEach(n -> result[0] = orderDependentFunction(result[0], n));
       System.out.println("parallel: " + result[0]);
     }
+    return null;
+  }
 
+  private static Void parallelOrdered() {
     for (int i = 0; i < 10; i++) {
       result[0] = 0;
-      LongStream.range(0, 1000).parallel().forEachOrdered(n -> result[0] = orderDependentFunction(result[0], n));
+      getRange().parallel().forEachOrdered(n -> result[0] = orderDependentFunction(result[0], n));
       System.out.println("parallel ordered: " + result[0]);
     }
+    return null;
+  }
 
-    long reduce = LongStream.range(0, 1000).reduce(0, StreamsDemo::orderDependentFunction);
-    System.out.println("reduce: " + reduce);
+  private static Void reduce() {
+    for (int i = 0; i < 10; i++) {
+      long reduce = getRange().reduce(0, StreamsDemo::orderDependentFunction);
+      System.out.println("serial reduce: " + reduce);
+    }
+    return null;
+  }
+
+  private static Void parallelReduce() {
+    for (int i = 0; i < 10; i++) {
+      long preduce = getRange().parallel().reduce(0, StreamsDemo::orderDependentFunction);
+      System.out.println("parallel reduce: " + preduce);
+    }
+    return null;
+  }
+
+  private static LongStream getRange() {
+    return LongStream.range(0, 100000000);
   }
 
   private static long orderDependentFunction(long a, long c) {
@@ -79,7 +122,7 @@ public class StreamsDemo {
     long start = System.nanoTime();
     T result = method.get();
     long elapsedTime = System.nanoTime() - start;
-    System.out.println(info + ": " + elapsedTime / 1000000);
+    System.out.println(info + ": took " + elapsedTime / 1000000 + " ms");
     return result;
   }
 
