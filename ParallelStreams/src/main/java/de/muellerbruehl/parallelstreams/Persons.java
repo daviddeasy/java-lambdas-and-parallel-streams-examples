@@ -70,9 +70,9 @@ public class Persons {
 
   private void trySell() {
     Person seller = _sellers.get(_random.nextInt(_sellers.size()));
-    assert (seller != null);
+//    assert (seller != null);
     Person buyer = _persons.get(_random.nextInt(_persons.size()));
-    assert (buyer != null);
+//    assert (buyer != null);
     if (seller == buyer) {
       return;
     }
