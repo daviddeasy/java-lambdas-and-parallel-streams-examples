@@ -60,11 +60,11 @@ public class Persons {
     Map<Integer, ArticleInfo> selling = person.getSelling();
 
     for (int i = 0; i <= _random.nextInt(10); i++) {
-      int articleNo = 1 + _random.nextInt(articles.size());
-      if (selling.containsKey(articleNo)) {
+      int articleId = 1 + _random.nextInt(articles.size());
+      if (selling.containsKey(articleId)) {
         break;
       }
-      selling.put(articleNo, new ArticleInfo(articleNo));
+      selling.put(articleId, new ArticleInfo(articleId));
     }
   }
 
@@ -80,19 +80,19 @@ public class Persons {
     Map<Integer, ArticleInfo> buying = buyer.getBuying();
     Object[] articleNumbers = selling.keySet().toArray();
     int index = _random.nextInt(articleNumbers.length);
-    int articleNo = (int) articleNumbers[index];
-    Article article = articles.get(articleNo);
+    int articleId = (int) articleNumbers[index];
+    Article article = articles.get(articleId);
 
     if (diceRollsSell(seller, article)) {
       int quantity = randomQuantityOf(article);
       long price = applyDiscount(seller.getDiscountRate(), fullPriceFor(quantity, article));
-      ArticleInfo infoSelling = selling.get(articleNo);
+      ArticleInfo infoSelling = selling.get(articleId);
       infoSelling.setQuantity(infoSelling.getQuantity() + quantity);
       infoSelling.getAmount().add(price);
-      ArticleInfo infoBuying = buying.containsKey(articleNo) ? buying.get(articleNo) : new ArticleInfo(articleNo);
+      ArticleInfo infoBuying = buying.containsKey(articleId) ? buying.get(articleId) : new ArticleInfo(articleId);
       infoBuying.addQuantity(quantity);
       infoBuying.addPrice(price);
-      buying.put(articleNo, infoBuying);
+      buying.put(articleId, infoBuying);
     }
   }
 

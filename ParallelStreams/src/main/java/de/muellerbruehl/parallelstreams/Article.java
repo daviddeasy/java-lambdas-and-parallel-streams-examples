@@ -2,14 +2,14 @@ package de.muellerbruehl.parallelstreams;
 
 public class Article {
 
-  private final int _articleNo;
+  private final int _articleId;
   private String _name;
   private Money _price;
   private int _maxSell;
   private int _probability;
 
-  public Article(String articleData, int articleNo) {
-    _articleNo = articleNo;
+  public Article(String articleData, int articleId) {
+    _articleId = articleId;
     try {
       String[] parts = articleData.split(";");
       _name = parts[0];

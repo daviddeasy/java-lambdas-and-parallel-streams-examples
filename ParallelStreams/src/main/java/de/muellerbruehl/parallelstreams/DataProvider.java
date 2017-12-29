@@ -48,12 +48,12 @@ public class DataProvider {
       _surNames = readFile("Surnames.csv");
       readFile("GivenNamesFemale.csv").stream().forEach(n -> _givenNames.put(n, Gender.Female));
       readFile("GivenNamesMale.csv").stream().forEach(n -> _givenNames.put(n, Gender.Male));
-      int articleNo = 0;
+      int articleId = 0;
       for (String line : readFile("Articles.csv")) {
         if (!line.trim().isEmpty()) {
-          articleNo++;
-          Article article = new Article(line, articleNo);
-          _articles.put(articleNo, article);
+          articleId++;
+          Article article = new Article(line, articleId);
+          _articles.put(articleId, article);
         }
       };
     } catch (IOException ex) {

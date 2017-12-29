@@ -1,16 +1,16 @@
 package de.muellerbruehl.parallelstreams;
 
 public class ArticleInfo {
-  private final int _articleNo;
+  private final int _articleId;
   private long _quantity;
   private Money _amount; 
 
-  public ArticleInfo (int articleNo){
-    _articleNo = articleNo;
+  public ArticleInfo (int articleId){
+    _articleId = articleId;
     _amount = new Money();
   }
-  public int getArticleNo() {
-    return _articleNo;
+  public int getArticleId() {
+    return _articleId;
   }
 
   public long getQuantity() {
