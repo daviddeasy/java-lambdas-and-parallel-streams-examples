@@ -77,4 +77,7 @@ public class Person {
     _buying = buying;
   }
 
+  public String getName() {
+    return getGivenName() + " " + getSurname();
+  }
 }
