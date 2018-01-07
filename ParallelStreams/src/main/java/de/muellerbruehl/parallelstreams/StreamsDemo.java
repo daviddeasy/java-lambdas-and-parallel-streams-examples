@@ -8,6 +8,7 @@ package de.muellerbruehl.parallelstreams;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -29,12 +30,16 @@ public class StreamsDemo {
     List<Person> persons = getPersons().getPersons();
     System.out.println("Created " + persons.size() + " persons.\n");
 
-    simpleStreamsExperiments(persons);
+    if (false) simpleStreamsExperiments(persons);
+
+    new StreamOfStreams(persons).experiment();
   }
 
   private static Persons getPersons() {
     return invokeMethod("Creation of persons", Persons::getInstance);
   }
+
+  //-------------------------------------------------------------
 
   private static void showParallelProblem() {
 
@@ -151,21 +156,38 @@ public class StreamsDemo {
   }
 
   private static void averageAgeOfAllGirlsUnder20In(List<Person> persons) {
+    collectAverageAgeOfAllGirlsUnder(20, persons);
     averageAgeOfAllGirlsUnder(20, persons);
   }
 
   // To see what happens if the filtered stream is empty
   // Collectors.averagingInt(): "If no elements are present, the result is 0."
   private static void averageAgeOfNoSuchPeople(List<Person> persons) {
-    averageAgeOfAllGirlsUnder(10, persons);  }
+    collectAverageAgeOfAllGirlsUnder(10, persons);
+    averageAgeOfAllGirlsUnder(10, persons);
+  }
 
-  private static void averageAgeOfAllGirlsUnder(int age, List<Person> persons) {
+  private static void collectAverageAgeOfAllGirlsUnder(int age, List<Person> persons) {
     Double meanAge = persons.stream()
             .filter(Person::isFemale)
             .filter(p -> p.getAge() < age)
             .collect(Collectors.averagingInt(Person::getAge));
     if (meanAge > 0) {
-      System.out.println("Mean age of girls under " + age + " = " + meanAge);
+      System.out.println("Mean age of girls under " + age + " (via Collectors.averagingInt()) = " + meanAge);
+    } else {
+      System.out.println("No girls under " + age);
+    }
+  }
+
+  private static void averageAgeOfAllGirlsUnder(int age, List<Person> persons) {
+    OptionalDouble meanAge = persons.stream()
+            .filter(Person::isFemale)
+            .filter(p -> p.getAge() < age)
+            .mapToInt(Person::getAge)
+            .average();
+    if (meanAge.isPresent()) {
+      // String.format("%.2f", meanAge.getAsDouble())
+      System.out.println("Mean age of girls under " + age + " (via IntStream.average()) = " + meanAge.getAsDouble());
     } else {
       System.out.println("No girls under " + age);
     }
@@ -199,7 +221,7 @@ public class StreamsDemo {
   }
 
   @SuppressWarnings("UnusedReturnValue")
-  private static <T> T invokeMethod(String info, Supplier<T> method) {
+  static <T> T invokeMethod(String info, Supplier<T> method) {
     long start = System.nanoTime();
     T result = method.get();
     long elapsedTime = System.nanoTime() - start;
