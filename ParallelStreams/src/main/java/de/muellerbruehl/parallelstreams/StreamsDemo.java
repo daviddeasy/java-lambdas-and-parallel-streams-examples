@@ -19,8 +19,6 @@ import java.util.stream.LongStream;
  */
 public class StreamsDemo {
 
-  // Test edit - investigating IntelliJ bug
-
   private static final long[] result = new long[1];
 
   @SuppressWarnings({"ConstantIfStatement", "ConstantConditions"})
