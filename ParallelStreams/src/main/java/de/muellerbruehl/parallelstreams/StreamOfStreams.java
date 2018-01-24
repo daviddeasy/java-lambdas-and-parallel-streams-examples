@@ -5,18 +5,16 @@ import java.util.List;
 import static de.muellerbruehl.parallelstreams.StreamsDemo.invokeMethod;
 
 public class StreamOfStreams {
-    private List<Person> persons;
 
-    StreamOfStreams(List<Person> persons) {
-
-        this.persons = persons;
+    public static void main(String[] args) {
+        experiment(Persons.getInstance().getPersons());
     }
 
-    public void experiment() {
+    public static void experiment(List<Person> persons) {
         for (int i=0; i< 10; i++) {
             invokeMethod("", () -> sumQuantityFromStreamOfStreams(persons));
             invokeMethod("", () -> sumQuantityFromFlatmapStreamOfStreams(persons));
-            invokeMethod("", () -> flatmapWithParallelStreams(persons));
+            invokeMethod("", () -> flatMapWithParallelStreams(persons));
             System.out.println();
         }
     }
@@ -62,7 +60,7 @@ public class StreamOfStreams {
         return null;
     }
 
-    private static Void flatmapWithParallelStreams(List<Person> persons) {
+    private static Void flatMapWithParallelStreams(List<Person> persons) {
         long totalItemsForSale = persons.parallelStream()
                 .filter(Person::isVendor)
                 .flatMapToLong(p -> p.getSelling().values().parallelStream()

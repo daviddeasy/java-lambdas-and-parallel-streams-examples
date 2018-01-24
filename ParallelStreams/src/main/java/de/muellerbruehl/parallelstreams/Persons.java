@@ -26,6 +26,7 @@ public class Persons {
   }
 
   private Persons() {
+    System.out.println("\nStarted creating persons - takes a while...");
     for (int i = 0; i < PersonCount; i++) {
       Person person = createPerson();
       _persons.add(person);
@@ -37,6 +38,7 @@ public class Persons {
     for (int i = 0; i <= maxSells; i++) {
       trySell();
     }
+    System.out.println("Created " + _persons.size() + " persons.\n");
   }
 
   public static Persons getInstance() {
